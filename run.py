@@ -2,18 +2,19 @@ import json
 
 from telethon import TelegramClient
 
+try:
+    with open("config.json") as config_json:
+        config = json.load(config_json)
 
-async def send_message(message_text, group_id):
+except json.decoder.JSONDecodeError:
+        print("something wrong with Json config")
+
+# client = TelegramClient('anon', config["API_ID"], config["API_HASH"])
+
+
+async def send_message(group_id, message_text):
     await client.send_message(group_id, message_text)
     print(f"message to {group_id} was successfully sent")
-
-
-def get_config():
-    try:
-        with open('config.json') as config_json:
-            config = json.load(config_json)
-    except json.decoder.JSONDecodeError:
-        print("something with Json config")
 
 
 def get_numbers():
@@ -27,5 +28,7 @@ def get_numbers():
 
 
 if __name__ == "__main__":
-    client = TelegramClient('anon', API_ID, API_HASH)
-    print(get_numbers())
+    numbers = get_numbers()
+    queue_number = int(config["queue_number"])
+    for i in numbers[queue_number:]:
+        print(i)
