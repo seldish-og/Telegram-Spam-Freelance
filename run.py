@@ -1,15 +1,20 @@
-import telethon
+import json
 
+from telethon import TelegramClient
 
-API_ID = config["API_ID"]
-API_HASH = config["API_HASH"]
-
-
-client = TelegramClient('anon', API_ID, API_HASH)
 
 async def send_message(message_text, group_id):
     await client.send_message(group_id, message_text)
     print(f"message to {group_id} was successfully sent")
+
+
+def get_config():
+    try:
+        with open('config.json') as config_json:
+            config = json.load(config_json)
+    except json.decoder.JSONDecodeError:
+        print("something with Json config")
+
 
 def get_numbers():
     result = []
@@ -19,4 +24,8 @@ def get_numbers():
         if i.strip():
             result.append(i.strip())
     return result
-print(get_numbers())
+
+
+if __name__ == "__main__":
+    client = TelegramClient('anon', API_ID, API_HASH)
+    print(get_numbers())
