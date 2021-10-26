@@ -1,4 +1,9 @@
 import json
+from os import times
+import random
+from telethon.sync import TelegramClient
+from telethon import functions, types
+import time
 
 from telethon import TelegramClient
 
@@ -9,7 +14,10 @@ try:
 except json.decoder.JSONDecodeError:
         print("something wrong with Json config")
 
-# client = TelegramClient('anon', config["API_ID"], config["API_HASH"])
+
+ID = config["API_ID"]
+HASH = config["API_HASH"]
+QUEUE_NUMBER = int(config["QUEUE_NUMBER"])
 
 
 async def send_message(group_id, message_text):
@@ -29,6 +37,31 @@ def get_numbers():
 
 if __name__ == "__main__":
     numbers = get_numbers()
-    queue_number = int(config["queue_number"])
-    for i in numbers[queue_number:]:
-        print(i)
+
+    for i in numbers[QUEUE_NUMBER:]:
+        with TelegramClient("anon", ID, HASH) as client:
+
+            client_id_numb = random.randrange(-2**63, 2**63)
+
+            '''Add new contact'''
+            try:
+                result = client(functions.contacts.ImportContactsRequest(
+                    contacts=[types.InputPhoneContact(
+                        client_id=client_id_numb,
+                        phone='some string here',
+                        first_name=f'{client_id_numb + "user"}',
+                        last_name=f'{client_id_numb + "user"}')]))
+            except Exception as e:
+                print(f"smth wrong with adding new contact {i}")
+                print(e)
+            '''Add new contact'''
+
+            time.sleep(10)
+
+            '''Send message'''
+            try:
+                client.loop.run_until_complete(send_message(i, "hi"))
+            except Exception as ex:
+                print(f"smth wrong with sending message to {i}")
+                print(ex)
+            '''Send message'''
